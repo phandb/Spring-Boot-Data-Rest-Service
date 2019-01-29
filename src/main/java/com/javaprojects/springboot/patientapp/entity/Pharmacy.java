@@ -3,8 +3,10 @@ package com.javaprojects.springboot.patientapp.entity;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -60,16 +62,16 @@ public class Pharmacy {
 	
 	 // Set up Many to Many relationship with patients table using FK patient_id
 
-	/*@ManyToMany(fetch=FetchType.EAGER,
+	/*@ManyToMany(fetch=FetchType.LAZY,
 			cascade= {CascadeType.PERSIST, CascadeType.MERGE,
 					CascadeType.DETACH, CascadeType.REFRESH	})
-					*/
-	@ManyToMany
-	@JoinTable(
+		*/			
+	@ManyToMany(mappedBy="pharmacies")
+	/*@JoinTable(
 		name = "patient_pharmacy",
-		joinColumns=@JoinColumn(name="pharmacy_id"),
-		inverseJoinColumns=@JoinColumn(name="patient_id")
-		)
+		joinColumns=@JoinColumn(name="pharmacy_id", referencedColumnName ="id"),
+		inverseJoinColumns=@JoinColumn(name="patient_id", referencedColumnName ="id")
+		)*/
 	private Set<Patient> patients = new HashSet<>();
 	
 	public Set<Patient> getPatients() {

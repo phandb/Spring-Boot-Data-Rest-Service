@@ -3,8 +3,10 @@ package com.javaprojects.springboot.patientapp.entity;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -13,7 +15,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
-@Entity
+	@Entity
 	@Table(name="physicians")
 	/*
 	@NamedQueries({
@@ -61,16 +63,16 @@ import javax.persistence.Table;
 		//Relationship with patients table
 		//a doctor can have many patients, and  a patient can have many doctors
 		//No delete cascade type.  Can't not delete doctor once a patient is deleted
-		/*@ManyToMany(fetch = FetchType.EAGER,
+		/*@ManyToMany(fetch = FetchType.LAZY,
 					cascade= {CascadeType.PERSIST, CascadeType.MERGE,
 							 CascadeType.DETACH, CascadeType.REFRESH})
 		*/
-		@ManyToMany
-		@JoinTable(
+		@ManyToMany(mappedBy = "physicians")
+		/*@JoinTable(
 				name="patients_physicians",
-				joinColumns=@JoinColumn(name="physician_id"),
-				inverseJoinColumns=@JoinColumn(name="patient_id")
-				)
+				joinColumns=@JoinColumn(name="physician_id", referencedColumnName ="id"),
+				inverseJoinColumns=@JoinColumn(name="patient_id", referencedColumnName ="id")
+				)*/
 		private Set<Patient> patients = new HashSet<>();
 		
 		public Set<Patient> getPatients() {
