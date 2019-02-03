@@ -1,5 +1,7 @@
 package com.javaprojects.springboot.patientapp.entity;
 
+
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -62,7 +64,7 @@ public class Patient {
 	@Column(name="gender")
 	private String gender;
 	
-	@Temporal(TemporalType.DATE)
+	//@Temporal(TemporalType.DATE)
 	@Column(name="date_of_birth")
 	private Date dateOfBirth;
 	
