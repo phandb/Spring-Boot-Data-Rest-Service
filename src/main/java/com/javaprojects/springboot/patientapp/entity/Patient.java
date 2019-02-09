@@ -10,7 +10,6 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -19,8 +18,8 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 @Table(name="patients")
@@ -72,79 +71,80 @@ public class Patient {
 	private String address;
 	
 	/****************Define relationship with medication*************************/
-	
+
 	//Mapping One to Many relationship with medications table
 	@OneToMany(mappedBy="patient", cascade= CascadeType.ALL, orphanRemoval = true)
-	//@JoinColumn(name="patient_id")
-	private Set<Medication> medications = new HashSet<>();
+	//@JoinColumn(name="patient_id")  //No need to map @JoinColumn
+	private Set<Medication> medications = new HashSet<Medication>();
 	
 	//Setter and getter for relationship with medications table 
-		public Set<Medication> getMedications() {
-			return medications;
-		}
+	public Set<Medication> getMedications() {
+		return medications;
+	}
 
 
-		public void setMedications(Set<Medication> medications) {
-			this.medications = medications;
-		}
-		
-		public boolean addMedicationToPatient(Medication medication) {
-			medication.setPatient(this);
-			return getMedications().add(medication);
-		}
-		
-		public void removeMedicationFromPatient(Medication medication) {
-			getMedications().remove(medication);
-		}
-		
-		
-		//Add convenience methods for bi-directional relationship with medications
-		public void add(Medication tempMedication) {
-			if (medications == null) {
-				medications = new HashSet<>();
-				
-			}
-			medications.add(tempMedication);
-			tempMedication.setPatient(this);
-		}
-		//Convenience add medications method for uni-directional relationship
-		public void addMedication(Medication theMedication) {
-			if(medications == null) {
-				medications = new HashSet<>();
-			}
-			
-			medications.add(theMedication);
+	public void setMedications(Set<Medication> medications) {
+		this.medications = medications;
+	}
+	
+	public boolean addMedicationToPatient(Medication medication) {
+		medication.setPatient(this);
+		return getMedications().add(medication);
+	}
+	
+	public void removeMedicationFromPatient(Medication medication) {
+		getMedications().remove(medication);
+	}
+	
+	
+	//Add convenience methods for bi-directional relationship with medications
+	public void add(Medication tempMedication) {
+		if (medications == null) {
+			medications = new HashSet<>();
 			
 		}
+		medications.add(tempMedication);
+		tempMedication.setPatient(this);
+	}
+	//Convenience add medications method for uni-directional relationship
+	public void addMedication(Medication theMedication) {
+		if(medications == null) {
+			medications = new HashSet<>();
+		}
+		
+		medications.add(theMedication);
+		
+	}
 	
 	/*******************************************************************/
 	//Mapping Many To Many relationship with physicians table
 	/*@ManyToMany(fetch=FetchType.EAGER,
 				cascade= {CascadeType.PERSIST, CascadeType.MERGE,
 						  CascadeType.DETACH, CascadeType.REFRESH})*/
-	@ManyToMany
+	@ManyToMany(cascade = CascadeType.ALL)
+	@JsonBackReference
 	@JoinTable(
 			name="patients_physicians",
 			joinColumns=@JoinColumn(name="patient_id", referencedColumnName = "id"),
 			inverseJoinColumns=@JoinColumn(name="physician_id", referencedColumnName = "id")
 			)
-	private Set<Physician> physicians = new HashSet<>();
+	private Set<Physician> physicians = new HashSet<Physician>();
 	
 	//Setter and getter for physicians
 
 
-		public Set<Physician> getPhysicians() {
-			return physicians;
-		}
+	public Set<Physician> getPhysicians() {
+		return physicians;
+	}
 
 
-		public void setPhysicians(Set<Physician> physicians) {
-			this.physicians = physicians;
-		}
+	public void setPhysicians(Set<Physician> physicians) {
+		this.physicians = physicians;
+	}
 		
 		
 	
-	/*****************************************************************/
+	/******Mapping Many To Many relationship with pharmacies table**********/
 	//Mapping Many To Many relationship with pharmacies table
 	//No CascadeType.REMOVE since we don't want to delete a patient
 	/*@ManyToMany(fetch=FetchType.LAZY,
@@ -152,22 +152,23 @@ public class Patient {
 						CascadeType.DETACH, CascadeType.REFRESH	})
 	*/
 	@ManyToMany(cascade = CascadeType.ALL)
+	@JsonBackReference
 	@JoinTable(
 			name = "patient_pharmacy",
 			joinColumns=@JoinColumn(name="patient_id", referencedColumnName ="id"),
 			inverseJoinColumns=@JoinColumn(name="pharmacy_id", referencedColumnName="id")
 			)
-	private List<Pharmacy> pharmacies;
+	private Set<Pharmacy> pharmacies = new HashSet<Pharmacy>();
 	
 	//Setter and getter for pharmacies
-			public List<Pharmacy> getPharmacies() {
-				return pharmacies;
-			}
+	public Set<Pharmacy> getPharmacies() {
+		return pharmacies;
+	}
 
 
-			public void setPharmacies(List<Pharmacy> pharmacies) {
-				this.pharmacies = pharmacies;
-			}
+	public void setPharmacies(Set<Pharmacy> pharmacies) {
+		this.pharmacies = pharmacies;
+	}
 
 	
 	/*****************************************************************/
@@ -176,7 +177,12 @@ public class Patient {
 	public Patient() {
 		
 	}
+	
+	
 
+
+	
+	
 	public Patient(String firstName, String middleName, String lastName, String gender, Date dateOfBirth,
 			String address) {
 		

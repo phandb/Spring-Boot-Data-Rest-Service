@@ -59,21 +59,21 @@ import javax.persistence.Table;
 		@Column(name="specialty")
 		private String physicianSpecialty;
 		
-		/*****************************************************************/
-		//Relationship with patients table
+		/************Relationship with patients table****************************/
+		
 		//a doctor can have many patients, and  a patient can have many doctors
 		//No delete cascade type.  Can't not delete doctor once a patient is deleted
 		/*@ManyToMany(fetch = FetchType.LAZY,
 					cascade= {CascadeType.PERSIST, CascadeType.MERGE,
 							 CascadeType.DETACH, CascadeType.REFRESH})
 		*/
-		@ManyToMany(mappedBy = "physicians")
-		/*@JoinTable(
+		@ManyToMany  //(mappedBy = "physicians")
+		@JoinTable(
 				name="patients_physicians",
 				joinColumns=@JoinColumn(name="physician_id", referencedColumnName ="id"),
 				inverseJoinColumns=@JoinColumn(name="patient_id", referencedColumnName ="id")
-				)*/
-		private Set<Patient> patients = new HashSet<>();
+				)
+		private Set<Patient> patients = new HashSet<Patient>();
 		
 		public Set<Patient> getPatients() {
 			return this.patients;

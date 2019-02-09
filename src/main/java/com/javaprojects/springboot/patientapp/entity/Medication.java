@@ -4,12 +4,18 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 @Table(name="medications")
@@ -39,11 +45,16 @@ public class Medication implements Serializable {
 	@Column(name="medication_dosage")
 	private String medicationDosage;
 	
-	/***********************************************************************************/
+	/************************Setup Relationship******************************/
 	//Setup many to one relationship with patient table
 	//one patient can have many medications
-	@ManyToOne  
+	
+	@ManyToOne (fetch = FetchType.LAZY, optional = false)
+	@OnDelete(action = OnDeleteAction.CASCADE)
+	//Map @JoinColumn at the Owner side which medication
 	@JoinColumn(name="patient_id")
+	//This prevent recursive relationship in JSON which lead to an infinite loop of nested objects in response
+	@JsonBackReference
 	private Patient patient;
 	
 	public Patient getPatient() {
@@ -73,7 +84,7 @@ public class Medication implements Serializable {
 		this.medicationStrength = medicationStrength;
 		this.medicationDosage = medicationDosage;
 	}
-
+	
 
 	public int getId() {
 		return this.id;
