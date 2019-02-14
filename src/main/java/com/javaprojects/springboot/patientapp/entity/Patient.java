@@ -73,7 +73,9 @@ public class Patient {
 	/****************Define relationship with medication*************************/
 
 	//Mapping One to Many relationship with medications table
-	@OneToMany(mappedBy="patient", cascade= CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy="patient", 
+			cascade= CascadeType.ALL,
+			orphanRemoval = true)
 	//@JoinColumn(name="patient_id")  //No need to map @JoinColumn
 	private Set<Medication> medications = new HashSet<Medication>();
 	
@@ -86,17 +88,23 @@ public class Patient {
 	public void setMedications(Set<Medication> medications) {
 		this.medications = medications;
 	}
-	
-	public boolean addMedicationToPatient(Medication medication) {
+	/****Convenient methods for relationship********/
+	public void addMedicationToPatient(Medication medication) {
+		medications.add(medication);
 		medication.setPatient(this);
-		return getMedications().add(medication);
+		
 	}
 	
 	public void removeMedicationFromPatient(Medication medication) {
-		getMedications().remove(medication);
+		
+		medications.remove(medication);
+		medication.setPatient(null);
+		//getMedications().remove(medication);
 	}
+	 
+
 	
-	
+/*	
 	//Add convenience methods for bi-directional relationship with medications
 	public void add(Medication tempMedication) {
 		if (medications == null) {
@@ -115,6 +123,7 @@ public class Patient {
 		medications.add(theMedication);
 		
 	}
+	*/
 	
 	/*******************************************************************/
 	//Mapping Many To Many relationship with physicians table
@@ -122,7 +131,7 @@ public class Patient {
 				cascade= {CascadeType.PERSIST, CascadeType.MERGE,
 						  CascadeType.DETACH, CascadeType.REFRESH})*/
 	@ManyToMany(cascade = CascadeType.ALL)
-	@JsonBackReference
+	//@JsonBackReference
 	@JoinTable(
 			name="patients_physicians",
 			joinColumns=@JoinColumn(name="patient_id", referencedColumnName = "id"),
@@ -152,7 +161,7 @@ public class Patient {
 						CascadeType.DETACH, CascadeType.REFRESH	})
 	*/
 	@ManyToMany(cascade = CascadeType.ALL)
-	@JsonBackReference
+	//@JsonBackReference
 	@JoinTable(
 			name = "patient_pharmacy",
 			joinColumns=@JoinColumn(name="patient_id", referencedColumnName ="id"),

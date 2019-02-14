@@ -50,11 +50,11 @@ public class Medication implements Serializable {
 	//one patient can have many medications
 	
 	@ManyToOne (fetch = FetchType.LAZY, optional = false)
-	@OnDelete(action = OnDeleteAction.CASCADE)
+	//@OnDelete(action = OnDeleteAction.CASCADE)
 	//Map @JoinColumn at the Owner side which medication
 	@JoinColumn(name="patient_id")
 	//This prevent recursive relationship in JSON which lead to an infinite loop of nested objects in response
-	@JsonBackReference
+	//@JsonBackReference
 	private Patient patient;
 	
 	public Patient getPatient() {
@@ -65,6 +65,25 @@ public class Medication implements Serializable {
 	public void setPatient(Patient patient) {
 		this.patient = patient;
 	}
+	
+	//it’s good practice to override equals and hashCode 
+	//for the child entity in a bidirectional association. 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Medication )) return false;
+        Medication medication = (Medication) obj;
+        return id != 0 && id == (medication.id);
+    }
+    
+    
+    @Override
+    public int hashCode() {
+        return 31;
+    }
+    
+
+
 	
 	
 	/*********************************************************************************/
